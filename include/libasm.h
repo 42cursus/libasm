@@ -15,5 +15,6 @@
 
 size_t	ft_strlen(const char *src);
 ssize_t ft_write(int fd, const char *buf, size_t size);
+ssize_t ft_read(int fd, void *buf, size_t count);
 
 #endif //LIBASM_H

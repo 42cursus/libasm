@@ -13,6 +13,8 @@ global   ft_write:function (ft_write.end - ft_write)
 
 SECTION .text			  ; Section containing code
 
+; ft_write() writes up to count bytes from the buffer starting at buf
+; to the file referred to by the file descriptor fd.
 ;
 ; On success, the number of bytes written is returned.
 ; On error, -1 is returned, and errno is set to indicate the cause of the error.
