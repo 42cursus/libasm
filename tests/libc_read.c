@@ -13,7 +13,7 @@
 #include <sys/types.h>
 #include <asm/unistd.h>
 #include <errno.h>
-#include <bits/syscall.h>
+#include <syscall.h>
 
 /**
  * https://android.googlesource.com/platform/bionic/+/ics-mr0/libc/bionic/__set_errno.c
