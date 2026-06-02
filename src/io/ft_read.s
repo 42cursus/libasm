@@ -28,7 +28,7 @@ ft_read:
 	sub	rsp, 8		; reserve 8 bytes for stack alignment
 
 	; read(int fd, void *buf, size_t count)
-	mov rax, strict qword SYS_write ; read
+	mov rax, strict qword SYS_read  ; read
 	mov rdx, rdx					; count
 	mov rsi, rsi					; buf
 	mov rdi, rdi					; fd
