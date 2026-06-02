@@ -46,7 +46,7 @@ ft_write:
 	call	__errno_location wrt ..plt
 	neg	ebx
 	mov	dword [rax], ebx
-	mov	eax, -1
+	mov	rax, -1
 
 .LEAVE:
 	add	rsp, 8
