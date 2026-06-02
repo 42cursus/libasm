@@ -62,7 +62,8 @@ OBJS			:= $(SRCS:$(SRC_DIR)/%.s=$(OBJ_DIR)/%.o)
 BONUS_OBJS		:= $(BONUS_SRCS:$(SRC_DIR)/%.s=$(OBJ_DIR)/%.o)
 
 TEST_SRCS		:= $(wildcard $(TEST_DIR)/*.c) \
-				   $(wildcard $(TEST_DIR)/suites/*.c)
+				   $(wildcard $(TEST_DIR)/suites/*.c) \
+				   $(wildcard $(TEST_DIR)/study/*.c)
 TEST_OBJS		:= $(TEST_SRCS:$(TEST_DIR)/%.c=$(OBJ_DIR)/test/%.o)
 TEST_LDLIBS		= -lasm -lbsd
 TEST_LDFLAGS	= -L.
