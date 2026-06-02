@@ -51,7 +51,7 @@ ft_strcpy:
 	mov	rax, dest
 	mov	byte[rax], 0
 	mov	rax, rbx
-	mov	rbx, qword[rbp]
+	mov	rbx, qword[rbp - 8]
 	leave
 	ret
 .end:
