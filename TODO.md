@@ -5,10 +5,10 @@ Grouped by milestone. Tick items as they land.
 ## Mandatory
 
 - [x] `ft_strlen`
-- [ ] `ft_strcpy` — implementation lands but violates the SysV ABI: it clobbers callee-saved `rbx` (epilogue does `mov rbx, qword[rbp]` instead of `mov rbx, qword[rbp - 8]`, restoring the saved RBP value rather than the saved RBX). Surfaced by `tests/suites/test_strcpy.c`.
-- [ ] `ft_strcmp` — initial implementation in `src/string/ft_strcmp.s`; needs test coverage and a `man 3 strcmp` audit (unsigned byte compare, return sign only).
-- [ ] `ft_write` — on the error path, `mov eax, -1` zero-extends to `0x00000000FFFFFFFF` instead of `-1` (`0xFFFFFFFFFFFFFFFF`). Caller sees `4294967295`. Surfaced by `tests/suites/test_write.c`. Fix: `mov rax, -1` (or `or rax, -1`).
-- [ ] `ft_read` — same `mov eax, -1` bug as `ft_write`. Surfaced by `tests/suites/test_read.c`.
+- [x] `ft_strcpy` — covered by `tests/suites/test_strcpy.c`.
+- [ ] `ft_strcmp` — implementation in `src/string/ft_strcmp.s`, covered by `tests/suites/test_strcmp.c`. Audit against `man 3 strcmp` (unsigned byte compare, return sign only).
+- [x] `ft_write` — syscall + errno wiring; covered by `tests/suites/test_write.c`.
+- [x] `ft_read` — syscall + errno wiring; covered by `tests/suites/test_read.c`.
 - [ ] `ft_strdup` — `src/string/ft_strdup.s` is currently empty; implement using `ft_strlen` + `malloc` + `ft_strcpy`, set `errno = ENOMEM` on alloc failure. Flip `FT_STRDUP_IMPLEMENTED` to `1` in `tests/suites/test_strdup.c` once done.
 - [ ] Verify every mandatory function against `man` semantics, including edge cases (empty strings, `NULL` where allowed/forbidden, max-length inputs).
 - [ ] Ensure `errno` is left **unchanged** on success for `ft_read`/`ft_write` (asserted in the suites).
@@ -30,9 +30,9 @@ symbols.
 
 ## Quality
 
-- [ ] Per-function test cases in `tests/` (one `.c` per function or a clearly delimited block in `main.c`) printing PASS/FAIL.
-- [ ] Add a `make test` target that runs `./libasm_test` and exits non-zero on failure.
-- [ ] CI: GitHub Actions workflow running `make re && ./libasm_test` on Ubuntu.
+- [x] Per-function test cases in `tests/suites/` (one `.c` per function) using the assert-based runner in `tests/test.h`.
+- [x] `make test` target that runs `./libasm_test` and exits non-zero on failure.
+- [ ] CI: GitHub Actions workflow running `make re && make test` on Ubuntu.
 - [ ] Run `valgrind ./libasm_test` clean (no leaks, no invalid reads).
 - [ ] Verify 16-byte stack alignment at every `call` site in our asm.
 - [ ] Confirm `-no-pie` is **not** used anywhere (subject forbids it).
