@@ -97,7 +97,11 @@ target_compile_options(${TARGET_LIB_NAME}
         ${TARGET_CFLAGS}>)
 
 file(GLOB_RECURSE TEST_TARGET_HEADERS "${PROJECT_SOURCE_DIR}/tests/*.h")
-file(GLOB_RECURSE TEST_TARGET_SOURCES "${PROJECT_SOURCE_DIR}/tests/*.c")
+# tests/study/ holds reference C implementations kept for personal study only;
+# they are intentionally excluded from the test binary build.
+file(GLOB TEST_TARGET_SOURCES
+    "${PROJECT_SOURCE_DIR}/tests/*.c"
+    "${PROJECT_SOURCE_DIR}/tests/suites/*.c")
 
 set(TEST_TARGET_NAME "${PROJECT_NAME}_test")
 

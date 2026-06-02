@@ -1,41 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   suites.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abelov <abelov@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/07 15:21:47 by abelov            #+#    #+#             */
+/*   Created: 2026/06/02 21:13:49 by abelov            #+#    #+#             */
 /*   Updated: 2026/06/02 21:13:49 by abelov           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#define _GNU_SOURCE
-#undef  _FORTIFY_SOURCE
-#define _FORTIFY_SOURCE 0
+#ifndef LIBASM_TEST_SUITES_H
+#define LIBASM_TEST_SUITES_H
 
-#include <stdio.h>
-#include <stdlib.h>
+void	test_strlen(void);
+void	test_strcpy(void);
+void	test_strcmp(void);
+void	test_strdup(void);
+void	test_write(void);
+void	test_read(void);
 
-#include "test.h"
-#include "suites/suites.h"
-
-unsigned long g_test_count  = 0;
-unsigned long g_test_failed = 0;
-
-int main(void)
-{
-	fputs("libasm tests\n", stderr);
-
-	RUN_SUITE(test_strlen);
-	RUN_SUITE(test_strcpy);
-	RUN_SUITE(test_strcmp);
-	RUN_SUITE(test_strdup);
-	RUN_SUITE(test_write);
-	RUN_SUITE(test_read);
-
-	fprintf(stderr, "\n%lu assertions, %lu failed\n",
-		g_test_count, g_test_failed);
-
-	return g_test_failed == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
-}
+#endif /* LIBASM_TEST_SUITES_H */

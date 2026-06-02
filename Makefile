@@ -61,7 +61,8 @@ BONUS_SRCS		:= $(wildcard $(SRC_DIR)/bonus/*_bonus.s)
 OBJS			:= $(SRCS:$(SRC_DIR)/%.s=$(OBJ_DIR)/%.o)
 BONUS_OBJS		:= $(BONUS_SRCS:$(SRC_DIR)/%.s=$(OBJ_DIR)/%.o)
 
-TEST_SRCS		:= $(wildcard $(TEST_DIR)/*.c)
+TEST_SRCS		:= $(wildcard $(TEST_DIR)/*.c) \
+				   $(wildcard $(TEST_DIR)/suites/*.c)
 TEST_OBJS		:= $(TEST_SRCS:$(TEST_DIR)/%.c=$(OBJ_DIR)/test/%.o)
 TEST_LDLIBS		= -lasm -lbsd
 TEST_LDFLAGS	= -L.
@@ -97,6 +98,9 @@ $(OBJ_DIR)/test/%.o: $(TEST_DIR)/%.c
 $(TEST_TARGET): $(TEST_OBJS) $(NAME)
 		@$(CC) $(CFLAGS) $(TEST_LDFLAGS) -o $(TEST_TARGET) $(TEST_OBJS) $(TEST_LDLIBS)
 
+test: $(TEST_TARGET)
+		@./$(TEST_TARGET)
+
 clean:
 		@$(RM) -rfv $(OBJ_DIR)
 
@@ -107,4 +111,4 @@ re: fclean
 		+@$(MAKE) all --no-print-directory
 
 .SECONDARY: $(OBJS) $(BONUS_OBJS)
-.PHONY: all bonus clean fclean re
+.PHONY: all bonus clean fclean re test
