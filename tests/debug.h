@@ -42,7 +42,7 @@
 
 #define MATERIALIZE_IN_REG(x) __asm__ volatile ("" : "+r"(x))
 
-__attribute__((noinline, optimize("-O0")))
+__attribute__((always_inline))
 static inline void escape(void *p)
 {
 	asm volatile("" : : "g"(p) : "memory");

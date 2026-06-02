@@ -5,13 +5,13 @@ Grouped by milestone. Tick items as they land.
 ## Mandatory
 
 - [x] `ft_strlen`
-- [x] `ft_strcpy`
+- [ ] `ft_strcpy` — implementation lands but violates the SysV ABI: it clobbers callee-saved `rbx` (epilogue does `mov rbx, qword[rbp]` instead of `mov rbx, qword[rbp - 8]`, restoring the saved RBP value rather than the saved RBX). Surfaced by `tests/suites/test_strcpy.c`.
 - [ ] `ft_strcmp` — initial implementation in `src/string/ft_strcmp.s`; needs test coverage and a `man 3 strcmp` audit (unsigned byte compare, return sign only).
-- [x] `ft_write` — syscall + errno wiring.
-- [x] `ft_read` — syscall + errno wiring.
-- [ ] `ft_strdup` — `src/string/ft_strdup.s` is currently empty; implement using `ft_strlen` + `malloc` + `ft_strcpy`, set `errno = ENOMEM` on alloc failure.
+- [ ] `ft_write` — on the error path, `mov eax, -1` zero-extends to `0x00000000FFFFFFFF` instead of `-1` (`0xFFFFFFFFFFFFFFFF`). Caller sees `4294967295`. Surfaced by `tests/suites/test_write.c`. Fix: `mov rax, -1` (or `or rax, -1`).
+- [ ] `ft_read` — same `mov eax, -1` bug as `ft_write`. Surfaced by `tests/suites/test_read.c`.
+- [ ] `ft_strdup` — `src/string/ft_strdup.s` is currently empty; implement using `ft_strlen` + `malloc` + `ft_strcpy`, set `errno = ENOMEM` on alloc failure. Flip `FT_STRDUP_IMPLEMENTED` to `1` in `tests/suites/test_strdup.c` once done.
 - [ ] Verify every mandatory function against `man` semantics, including edge cases (empty strings, `NULL` where allowed/forbidden, max-length inputs).
-- [ ] Ensure `errno` is left **unchanged** on success for `ft_read`/`ft_write`.
+- [ ] Ensure `errno` is left **unchanged** on success for `ft_read`/`ft_write` (asserted in the suites).
 - [ ] Norminette / 42 header check on every `.s` and `.c` file.
 
 ## Bonus
