@@ -33,7 +33,7 @@ set(PROJECT_CFLAGS
         -Wa,-L
         -fno-tree-vectorize
         -fno-builtin-memcpy
-        -fno-builtin-memmove
+#        -fno-builtin-memmove
         -fno-unroll-loops
         -fcf-protection=none
         -fno-stack-protector
@@ -45,13 +45,16 @@ IF(CMAKE_C_COMPILER_ID STREQUAL "GNU")
     LIST(APPEND PROJECT_CFLAGS
             -fno-thread-jumps
             -fno-reorder-blocks
+            -fno-tree-loop-distribute-patterns
             -fno-reorder-blocks-and-partition
             -fif-conversion
             -fif-conversion2
             -mmanual-endbr
             -mno-red-zone
+            -mno-sse -mno-sse2 -mno-sse3 -mno-ssse3 -mno-sse4.1
+            -mno-sse4.2 -mno-avx -mno-avx2 -mno-fma
             -minline-all-stringops
-            -mstringop-strategy=libcall
+            -mstringop-strategy=loop
             -mmemcpy-strategy=loop:0:align,libcall:-1:align
     )
 ENDIF()
@@ -63,14 +66,19 @@ set(TARGET_CFLAGS ${PROJECT_CFLAGS})
 set(TARGET_ASM_FLAGS ${NASM_FLAGS})
 
 set(TARGET_LIBSOURCES)
-file(GLOB TARGET_LIB_HEADERS "${PROJECT_SOURCE_DIR}/src/*.h")
+file(GLOB_RECURSE TARGET_LIB_HEADERS "${PROJECT_SOURCE_DIR}/src/*.h")
 
-file(GLOB TARGET_LIB_ASM_SOURCES "${PROJECT_SOURCE_DIR}/src/*.s")
+# Mandatory + bonus assembly sources (recursive). src/extra/ is excluded — it
+# holds non-graded helpers that must NOT be linked into libasm.a.
+file(GLOB_RECURSE TARGET_LIB_ASM_SOURCES
+    "${PROJECT_SOURCE_DIR}/src/string/*.s"
+    "${PROJECT_SOURCE_DIR}/src/io/*.s"
+    "${PROJECT_SOURCE_DIR}/src/bonus/*_bonus.s")
 foreach(X IN ITEMS ${TARGET_LIB_ASM_SOURCES})
     set_source_files_properties(${X} PROPERTIES LANGUAGE ASM_NASM)
 endforeach()
 
-file(GLOB TARGET_LIB_C_SOURCES "${PROJECT_SOURCE_DIR}/src/*.c")
+file(GLOB_RECURSE TARGET_LIB_C_SOURCES "${PROJECT_SOURCE_DIR}/src/*.c")
 
 list(APPEND TARGET_LIB_SOURCES "${TARGET_LIB_ASM_SOURCES};${TARGET_LIB_C_SOURCES}")
 
