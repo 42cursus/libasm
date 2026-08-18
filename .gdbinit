@@ -17,3 +17,15 @@ end
 document strlen_state
 Show ft_strlen's semantic register state at the current instruction.
 end
+
+define strcpy_state
+	printf "reg_return_ptr     (rax): %p\n", $rax
+	printf "reg_dest_cursor    (rdi): %p\n", $rdi
+	x/4bx $rdi
+	printf "reg_source_cursor  (rsi): %p\n", $rsi
+	x/s $rsi
+	printf "reg_copied_byte    (dl): 0x%02x\n", $dl
+end
+document strcpy_state
+Show ft_strcpy's semantic register state at the current instruction.
+end
