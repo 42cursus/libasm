@@ -92,6 +92,7 @@ TEST_LDFLAGS	= -L.
 # Targets                                                                      #
 # ---------------------------------------------------------------------------- #
 
+## Build the mandatory archive and test driver
 all: $(NAME) $(TEST_TARGET)
 
 $(NAME): $(OBJS) Makefile
@@ -103,6 +104,7 @@ $(NAME): $(OBJS) Makefile
 
 # `make bonus` (re)builds libasm.a containing mandatory + bonus objects, as
 # required by the subject.
+## Build the archive with mandatory and bonus symbols
 bonus: $(OBJS) $(BONUS_OBJS)
 		$(info ********** BUILDING $(NAME) (with bonus) ************)
 		@$(RM) $(NAME)
@@ -121,29 +123,51 @@ $(OBJ_DIR)/test/%.o: $(TEST_DIR)/%.c
 $(TEST_TARGET): $(TEST_OBJS) $(NAME) Makefile
 		@$(CC) $(CFLAGS) $(TEST_LDFLAGS) -o $(TEST_TARGET) $(TEST_OBJS) $(TEST_LDLIBS)
 
+## Run the mandatory test suite
 test: $(TEST_TARGET)
 		@./$(TEST_TARGET)
 
 $(BONUS_TEST_TARGET): $(BONUS_TEST_OBJS) bonus Makefile
 		@$(CC) $(CFLAGS) $(TEST_LDFLAGS) -o $(BONUS_TEST_TARGET) $(BONUS_TEST_OBJS) $(TEST_LDLIBS)
 
+## Build and run the bonus test suite
 test_bonus: $(BONUS_TEST_TARGET)
 		@./$(BONUS_TEST_TARGET)
 
 $(MANUAL_TARGET): $(MANUAL_TEST_OBJS) $(NAME) Makefile
 		@$(CC) $(CFLAGS) $(TEST_LDFLAGS) -o $(MANUAL_TARGET) $(MANUAL_TEST_OBJS) $(TEST_LDLIBS)
 
+## Build the interactive mandatory-function driver
 manual: $(MANUAL_TARGET)
 
+## Remove object files and dependency files
 clean:
 		@$(RM) -rfv $(OBJ_DIR)
 
+## Remove all generated files
 fclean: clean
 		@$(RM) -vf $(NAME) $(TEST_TARGET) $(BONUS_TEST_TARGET) $(MANUAL_TARGET)
 
+## Rebuild the mandatory archive and test driver
 re: fclean
 		+@$(MAKE) all --no-print-directory
 
+
+# Magic help adapted: from https://gitlab.com/depressiveRobot/make-help/blob/master/help.mk (MIT License)
+## List available Make targets
+help:
+	@printf "\nAvailable targets:\n\n"
+	@awk -F: '/^[a-zA-Z\-_0-9%\\ ]+:/ { \
+			helpMessage = match(lastLine, /^## (.*)/); \
+			if (helpMessage) { \
+					helpCommand = $$1; \
+					helpMessage = substr(lastLine, RSTART + 3, RLENGTH); \
+					printf "  \x1b[32;01m%-35s\x1b[0m %s\n", helpCommand, helpMessage; \
+			} \
+	} \
+	{ lastLine = $$0 }' $(MAKEFILE_LIST) | sort -u
+	@printf "\n"
+
 .SECONDARY: $(OBJS) $(BONUS_OBJS) $(TEST_OBJS) $(BONUS_TEST_OBJS) $(MANUAL_TEST_OBJS)
 -include $(DEPS)
-.PHONY: all bonus clean fclean re test test_bonus manual
+.PHONY: all bonus help clean fclean re test test_bonus manual

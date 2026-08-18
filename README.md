@@ -8,6 +8,7 @@ assembly for Linux (System V AMD64 ABI).
 Requirements: `nasm`, `gcc`, and `libbsd-dev` for the C test driver.
 
 ```bash
+make help           # list Makefile targets
 make                # mandatory libasm.a and libasm_test
 make bonus          # rebuild libasm.a with bonus symbols
 make re             # clean rebuild
