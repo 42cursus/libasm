@@ -11,6 +11,7 @@
 # **************************************************************************** #
 
 FILES	= main.c \
+		  suites/test_atoi_base.c \
 		  suites/test_list_push_front.c \
 		  suites/test_list_size.c \
 		  suites/test_list_sort.c \

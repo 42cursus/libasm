@@ -22,6 +22,7 @@ unsigned long	g_test_failed;
 int	main(void)
 {
 	fputs("libasm bonus tests\n", stderr);
+	RUN_SUITE(test_atoi_base);
 	RUN_SUITE(test_list_push_front);
 	RUN_SUITE(test_list_size);
 	RUN_SUITE(test_list_sort);

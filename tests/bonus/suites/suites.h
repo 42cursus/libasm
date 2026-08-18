@@ -10,11 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LIBASM_BONUS_TEST_SUITES_H
-# define LIBASM_BONUS_TEST_SUITES_H
+#ifndef SUITES_H
+# define SUITES_H
 
 # include "libasm_bonus.h"
 
+void	test_atoi_base(void);
 void	test_list_push_front(void);
 void	test_list_size(void);
 void	test_list_sort(void);
