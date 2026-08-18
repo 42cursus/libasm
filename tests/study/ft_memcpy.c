@@ -30,7 +30,7 @@
 #define ASM_L(name) ASM_DBG_LABEL(name)
 
 __attribute__((noinline))
-void	*ft_memcpy(void *dest, const void *src, size_t n)
+void	*ft_memcpy_c(void *dest, const void *src, size_t n)
 {
 	char				*save_pointer = dest;
 	unsigned char		*d = dest;

@@ -13,21 +13,8 @@
 #include "libasm.h"
 #include "suites.h"
 
-/* ft_strdup is not implemented yet (src/string/ft_strdup.s is empty).
- * Skip at runtime to keep the rest of the suite green; flip the guard once
- * the implementation lands. */
-#ifndef FT_STRDUP_IMPLEMENTED
-# define FT_STRDUP_IMPLEMENTED 0
-#endif
-
 void	test_strdup(void)
 {
-	if (!FT_STRDUP_IMPLEMENTED)
-	{
-		fprintf(stderr, "(skipped: ft_strdup not yet implemented) ");
-		return;
-	}
-
 	const char *samples[] = { "", "a", "hello", "The quick brown fox.", NULL };
 	for (size_t i = 0; samples[i] != NULL; i++)
 	{

@@ -6,7 +6,6 @@
 
 #include <string.h>
 
-#include "../debug.h"
 #include "../test.h"
 #include "libasm.h"
 #include "suites.h"

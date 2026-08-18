@@ -13,7 +13,9 @@
 cmake_minimum_required(VERSION 3.12)
 
 #set(CMAKE_C_COMPILER clang)
-set(CMAKE_C_COMPILER gcc)
+set(CMAKE_C_COMPILER gcc-12)
+
+enable_language(ASM_NASM)
 
 set(CMAKE_ASM_NASM_SOURCE_FILE_EXTENSIONS "asm;nasm;s")
 

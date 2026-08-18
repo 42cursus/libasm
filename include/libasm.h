@@ -15,6 +15,7 @@
 
 #include <stddef.h>
 #include <sys/types.h>
+#include "debug.h"
 
 /* string */
 size_t	ft_strlen(const char *src);
