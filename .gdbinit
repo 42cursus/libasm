@@ -1,3 +1,19 @@
 set environment GLIBC_TUNABLES glibc.cpu.hwcaps=-AVX2,-AVX_Fast_Unaligned_Load,-SSE4_1,-SSSE3
 set environment LD_HWCAP_MASK 0
-br main.c:77
+
+br main
+
+set disassembly-flavor intel
+
+define strlen_state
+	printf "reg_start_ptr (rdi): %p\n", $rdi
+	x/s $rdi
+	printf "reg_cursor    (rax): %p\n", $rax
+	x/4bx $rax
+	printf "reg_zero_mask (rdx): 0x%08x\n", $rdx
+	printf "reg_scratch_dword (ecx): 0x%08x\n", $ecx
+	printf "reg_marker_bit_idx / reg_byte_offset (rcx): %u\n", $rcx
+end
+document strlen_state
+Show ft_strlen's semantic register state at the current instruction.
+end
