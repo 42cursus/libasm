@@ -35,6 +35,15 @@ void	test_strcpy(void)
 	ASSERT_TRUE(ret == dst);
 	ASSERT_STR_EQ(dst, src);
 
+	/* The evaluator exercises long strings. */
+	char long_src[1024];
+	char long_dst[1024];
+	memset(long_src, 'x', sizeof(long_src) - 1);
+	long_src[sizeof(long_src) - 1] = '\0';
+	ret = ft_strcpy(long_dst, long_src);
+	ASSERT_TRUE(ret == long_dst);
+	ASSERT_STR_EQ(long_dst, long_src);
+
 	/* Overlap (dst > src, copying forward is safe per the man page —
 	 * undefined behaviour otherwise; we exercise the safe case). */
 	char buf[16] = "abcdef";

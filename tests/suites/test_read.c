@@ -47,4 +47,42 @@ void	test_read(void)
 	char dummy[4];
 	ASSERT_EQ_INT(ft_read(-1, dummy, sizeof(dummy)), -1);
 	ASSERT_EQ_INT(errno, EBADF);
+
+	/* Feed binary data through stdin, then consume it in two reads. */
+	int stdin_backup = dup(STDIN_FILENO);
+	int stdin_pipe[2];
+	int stdin_pipe_status = pipe(stdin_pipe);
+	const unsigned char stdin_payload[] = {'p', 'i', 'p', 'e', '\0', 'r', 'd'};
+	const size_t stdin_first_read = 5;
+	ASSERT_TRUE(stdin_backup >= 0);
+	ASSERT_EQ_INT(stdin_pipe_status, 0);
+	if (stdin_backup < 0 || stdin_pipe_status != 0)
+	{
+		if (stdin_backup >= 0)
+			close(stdin_backup);
+		return;
+	}
+	ASSERT_EQ_INT(write(stdin_pipe[1], stdin_payload, sizeof(stdin_payload)),
+		(ssize_t)sizeof(stdin_payload));
+	close(stdin_pipe[1]);
+	if (dup2(stdin_pipe[0], STDIN_FILENO) != STDIN_FILENO)
+	{
+		close(stdin_pipe[0]);
+		close(stdin_backup);
+		return;
+	}
+	close(stdin_pipe[0]);
+	memset(buf, 0, sizeof(buf));
+	ASSERT_EQ_INT(ft_read(STDIN_FILENO, buf, stdin_first_read),
+		(ssize_t)stdin_first_read);
+	ASSERT_TRUE(memcmp(buf, stdin_payload, stdin_first_read) == 0);
+	memset(buf, 0, sizeof(buf));
+	ASSERT_EQ_INT(ft_read(STDIN_FILENO, buf,
+			sizeof(stdin_payload) - stdin_first_read),
+		(ssize_t)(sizeof(stdin_payload) - stdin_first_read));
+	ASSERT_TRUE(memcmp(buf, stdin_payload + stdin_first_read,
+			sizeof(stdin_payload) - stdin_first_read) == 0);
+	ASSERT_EQ_INT(ft_read(STDIN_FILENO, buf, sizeof(buf)), 0);
+	ASSERT_EQ_INT(dup2(stdin_backup, STDIN_FILENO), STDIN_FILENO);
+	close(stdin_backup);
 }

@@ -26,4 +26,12 @@ void	test_strdup(void)
 		ASSERT_EQ_INT(errno, 0);                 /* unchanged on success */
 		free(dup);
 	}
+
+	char long_src[1024];
+	memset(long_src, 'x', sizeof(long_src) - 1);
+	long_src[sizeof(long_src) - 1] = '\0';
+	char *long_dup = ft_strdup(long_src);
+	ASSERT_TRUE(long_dup != NULL);
+	ASSERT_STR_EQ(long_dup, long_src);
+	free(long_dup);
 }

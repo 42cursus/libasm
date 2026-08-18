@@ -43,4 +43,36 @@ void	test_write(void)
 	errno = 0;
 	ASSERT_EQ_INT(ft_write(-1, "x", 1), -1);
 	ASSERT_EQ_INT(errno, EBADF);
+
+	/* Redirect stdout to a pipe and preserve embedded NUL bytes. */
+	int stdout_backup = dup(STDOUT_FILENO);
+	int stdout_pipe[2];
+	int stdout_pipe_status = pipe(stdout_pipe);
+	const char stdout_payload[] = {'p', 'i', 'p', 'e', '\0', 'w', 'r'};
+	ASSERT_TRUE(stdout_backup >= 0);
+	ASSERT_EQ_INT(stdout_pipe_status, 0);
+	if (stdout_backup < 0 || stdout_pipe_status != 0)
+	{
+		if (stdout_backup >= 0)
+			close(stdout_backup);
+		return;
+	}
+	if (dup2(stdout_pipe[1], STDOUT_FILENO) != STDOUT_FILENO)
+	{
+		close(stdout_pipe[0]);
+		close(stdout_pipe[1]);
+		close(stdout_backup);
+		return;
+	}
+	close(stdout_pipe[1]);
+	ASSERT_EQ_INT(ft_write(STDOUT_FILENO, stdout_payload, sizeof(stdout_payload)),
+		(ssize_t)sizeof(stdout_payload));
+	ASSERT_EQ_INT(ft_write(STDOUT_FILENO, "", 0), 0);
+	ASSERT_EQ_INT(dup2(stdout_backup, STDOUT_FILENO), STDOUT_FILENO);
+	close(stdout_backup);
+	memset(buf, 0, sizeof(buf));
+	ASSERT_EQ_INT(read(stdout_pipe[0], buf, sizeof(buf)), (ssize_t)sizeof(stdout_payload));
+	ASSERT_TRUE(memcmp(buf, stdout_payload, sizeof(stdout_payload)) == 0);
+	ASSERT_EQ_INT(read(stdout_pipe[0], buf, sizeof(buf)), 0);
+	close(stdout_pipe[0]);
 }
