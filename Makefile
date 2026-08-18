@@ -13,6 +13,7 @@
 NAME			= libasm.a
 TEST_TARGET		= libasm_test
 BONUS_TEST_TARGET = libasm_bonus_test
+MANUAL_TARGET	= libasm_manual
 
 BUILD_DIR		= build
 INC_DIR			= ./include
@@ -57,16 +58,19 @@ MANDATORY_DIRS	:= $(SRC_DIR)/string $(SRC_DIR)/io
 BONUS_DIR		:= $(SRC_DIR)/bonus
 TEST_SOURCE_DIRS := $(TEST_DIR) $(TEST_DIR)/suites $(TEST_DIR)/study
 BONUS_TEST_DIR	:= $(TEST_DIR)/bonus
+MANUAL_TEST_DIR	:= $(TEST_DIR)/manual
 
 MANDATORY_SRCS	:=
 BONUS_SRCS		:=
 TEST_SRCS		:=
 BONUS_TEST_SRCS	:=
+MANUAL_TEST_SRCS	:=
 
 include $(MANDATORY_DIRS:%=%/Makefile.mk)
 include $(BONUS_DIR)/Makefile.mk
 include $(TEST_SOURCE_DIRS:%=%/Makefile.mk)
 include $(BONUS_TEST_DIR)/Makefile.mk
+include $(MANUAL_TEST_DIR)/Makefile.mk
 
 SRCS			:= $(MANDATORY_SRCS)
 
@@ -75,10 +79,12 @@ BONUS_OBJS		:= $(BONUS_SRCS:$(SRC_DIR)/%.s=$(OBJ_DIR)/%.o)
 
 TEST_OBJS		:= $(TEST_SRCS:$(TEST_DIR)/%.c=$(OBJ_DIR)/test/%.o)
 BONUS_TEST_OBJS	:= $(BONUS_TEST_SRCS:$(TEST_DIR)/%.c=$(OBJ_DIR)/test/%.o)
+MANUAL_TEST_OBJS	:= $(MANUAL_TEST_SRCS:$(TEST_DIR)/%.c=$(OBJ_DIR)/test/%.o)
 DEPS			:= $(OBJS:.o=.d) \
 				   $(BONUS_OBJS:.o=.d) \
 				   $(TEST_OBJS:.o=.d) \
-				   $(BONUS_TEST_OBJS:.o=.d)
+				   $(BONUS_TEST_OBJS:.o=.d) \
+				   $(MANUAL_TEST_OBJS:.o=.d)
 TEST_LDLIBS		= -lasm -lbsd
 TEST_LDFLAGS	= -L.
 
@@ -124,15 +130,20 @@ $(BONUS_TEST_TARGET): $(BONUS_TEST_OBJS) bonus Makefile
 test_bonus: $(BONUS_TEST_TARGET)
 		@./$(BONUS_TEST_TARGET)
 
+$(MANUAL_TARGET): $(MANUAL_TEST_OBJS) $(NAME) Makefile
+		@$(CC) $(CFLAGS) $(TEST_LDFLAGS) -o $(MANUAL_TARGET) $(MANUAL_TEST_OBJS) $(TEST_LDLIBS)
+
+manual: $(MANUAL_TARGET)
+
 clean:
 		@$(RM) -rfv $(OBJ_DIR)
 
 fclean: clean
-		@$(RM) -vf $(NAME) $(TEST_TARGET) $(BONUS_TEST_TARGET)
+		@$(RM) -vf $(NAME) $(TEST_TARGET) $(BONUS_TEST_TARGET) $(MANUAL_TARGET)
 
 re: fclean
 		+@$(MAKE) all --no-print-directory
 
-.SECONDARY: $(OBJS) $(BONUS_OBJS) $(TEST_OBJS) $(BONUS_TEST_OBJS)
+.SECONDARY: $(OBJS) $(BONUS_OBJS) $(TEST_OBJS) $(BONUS_TEST_OBJS) $(MANUAL_TEST_OBJS)
 -include $(DEPS)
-.PHONY: all bonus clean fclean re test test_bonus
+.PHONY: all bonus clean fclean re test test_bonus manual
