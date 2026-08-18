@@ -46,24 +46,29 @@ INCLUDE_FLAGS	:= -I. -I$(INC_DIR) \
 					-I/usr/include/x86_64-linux-gnu
 
 # ---------------------------------------------------------------------------- #
-# Source discovery                                                             #
+# Source lists                                                                 #
 #                                                                              #
-#   Mandatory sources live under src/string and src/io.                        #
-#   Bonus sources end in `_bonus.s` and live under src/bonus.                  #
-#   Extra (non-graded) helpers live under src/extra and are NEVER linked into  #
-#   libasm.a (would fail the moulinette).                                      #
+# Each directory owns an explicit Makefile.mk list. This keeps the archive     #
+# inputs auditable and prevents study/extra sources from being included.       #
 # ---------------------------------------------------------------------------- #
 
-SRCS			:= $(wildcard $(SRC_DIR)/string/*.s) \
-				   $(wildcard $(SRC_DIR)/io/*.s)
-BONUS_SRCS		:= $(wildcard $(SRC_DIR)/bonus/*_bonus.s)
+MANDATORY_DIRS	:= $(SRC_DIR)/string $(SRC_DIR)/io
+BONUS_DIR		:= $(SRC_DIR)/bonus
+TEST_SOURCE_DIRS := $(TEST_DIR) $(TEST_DIR)/suites $(TEST_DIR)/study
+
+MANDATORY_SRCS	:=
+BONUS_SRCS		:=
+TEST_SRCS		:=
+
+include $(MANDATORY_DIRS:%=%/Makefile.mk)
+include $(BONUS_DIR)/Makefile.mk
+include $(TEST_SOURCE_DIRS:%=%/Makefile.mk)
+
+SRCS			:= $(MANDATORY_SRCS)
 
 OBJS			:= $(SRCS:$(SRC_DIR)/%.s=$(OBJ_DIR)/%.o)
 BONUS_OBJS		:= $(BONUS_SRCS:$(SRC_DIR)/%.s=$(OBJ_DIR)/%.o)
 
-TEST_SRCS		:= $(wildcard $(TEST_DIR)/*.c) \
-				   $(wildcard $(TEST_DIR)/suites/*.c) \
-				   $(wildcard $(TEST_DIR)/study/*.c)
 TEST_OBJS		:= $(TEST_SRCS:$(TEST_DIR)/%.c=$(OBJ_DIR)/test/%.o)
 DEPS			:= $(OBJS:.o=.d) \
 				   $(BONUS_OBJS:.o=.d) \
