@@ -27,7 +27,7 @@ READELF			= readelf
 
 ASM_FLAGS		= -f elf64 -g -F dwarf
 
-MANDATORY_FLAGS	:= -Wall -Wextra -Werror
+MANDATORY_FLAGS	:= -Wall -Wextra -Werror # -fsanitize=address,undefined
 OPTIMIZE_FLAGS	:= -Og \
 					-Wa,-L \
 					-mmanual-endbr \
@@ -65,6 +65,9 @@ TEST_SRCS		:= $(wildcard $(TEST_DIR)/*.c) \
 				   $(wildcard $(TEST_DIR)/suites/*.c) \
 				   $(wildcard $(TEST_DIR)/study/*.c)
 TEST_OBJS		:= $(TEST_SRCS:$(TEST_DIR)/%.c=$(OBJ_DIR)/test/%.o)
+DEPS			:= $(OBJS:.o=.d) \
+				   $(BONUS_OBJS:.o=.d) \
+				   $(TEST_OBJS:.o=.d)
 TEST_LDLIBS		= -lasm -lbsd
 TEST_LDFLAGS	= -L.
 
@@ -74,9 +77,10 @@ TEST_LDFLAGS	= -L.
 
 all: $(NAME) $(TEST_TARGET)
 
-$(NAME): $(OBJS)
+$(NAME): $(OBJS) Makefile
 		$(info ********** BUILDING $(@) ************)
-		@$(AR) rcsP $(NAME) $(OBJS)
+		@$(RM) $@
+		@$(AR) rcs $(NAME) $(OBJS)
 		@$(RANLIB) $(NAME)
 		@$(READELF) -sW $(@) | sed -n '1,3p;/FUNC/p'
 
@@ -84,19 +88,20 @@ $(NAME): $(OBJS)
 # required by the subject.
 bonus: $(OBJS) $(BONUS_OBJS)
 		$(info ********** BUILDING $(NAME) (with bonus) ************)
-		@$(AR) rcsP $(NAME) $(OBJS) $(BONUS_OBJS)
+		@$(RM) $(NAME)
+		@$(AR) rcs $(NAME) $(OBJS) $(BONUS_OBJS)
 		@$(RANLIB) $(NAME)
 		@$(READELF) -sW $(NAME) | sed -n '1,3p;/FUNC/p'
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.s
 		@mkdir -p $(@D)
-		@$(ASM_NASM) $(ASM_FLAGS) $< -o $@
+		@$(ASM_NASM) $(ASM_FLAGS) -MD $(@:.o=.d) -MP -MT $@ $< -o $@
 
 $(OBJ_DIR)/test/%.o: $(TEST_DIR)/%.c
 		@mkdir -p $(@D)
-		@$(CC) $(CFLAGS) $(INCLUDE_FLAGS) -c $< -o $@
+		@$(CC) $(CFLAGS) $(INCLUDE_FLAGS) -MMD -MP -MF $(@:.o=.d) -MT $@ -c $< -o $@
 
-$(TEST_TARGET): $(TEST_OBJS) $(NAME)
+$(TEST_TARGET): $(TEST_OBJS) $(NAME) Makefile
 		@$(CC) $(CFLAGS) $(TEST_LDFLAGS) -o $(TEST_TARGET) $(TEST_OBJS) $(TEST_LDLIBS)
 
 test: $(TEST_TARGET)
@@ -111,5 +116,6 @@ fclean: clean
 re: fclean
 		+@$(MAKE) all --no-print-directory
 
-.SECONDARY: $(OBJS) $(BONUS_OBJS)
+.SECONDARY: $(OBJS) $(BONUS_OBJS) $(TEST_OBJS)
+-include $(DEPS)
 .PHONY: all bonus clean fclean re test
