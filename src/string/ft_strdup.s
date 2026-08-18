@@ -31,24 +31,21 @@ global   ft_strdup.malloc_ok:function (ft_strdup.malloc_ok_end - ft_strdup.mallo
 global   ft_strdup.done:function (ft_strdup.end - ft_strdup.done)
 
 ERRNO_ENOMEM	equ 12
+NULL			equ 0
 
 ; ft_strdup register roles
 %define reg_source_ptr		r12
-%define reg_duplicate_ptr	rbx
+%define reg_duplicate_ptr	rax
 %define reg_errno_ptr		rax
 
 ft_strdup:
-	push	rbp
-	mov	rbp, rsp
 	push	r12
-	push	rbx
 	mov	reg_source_ptr, rdi
 
 	call	ft_strlen wrt ..plt
 	lea	rdi, 1[rax]
 
 	call	malloc wrt ..plt
-	mov	reg_duplicate_ptr, rax
 
 .check_alloc:
 	test	reg_duplicate_ptr, reg_duplicate_ptr
@@ -58,6 +55,7 @@ ft_strdup:
 .check_alloc_body:
 	call	__errno_location wrt ..plt
 	mov	DWORD [reg_errno_ptr], ERRNO_ENOMEM
+	mov	reg_duplicate_ptr, NULL
 	jmp	.done
 .check_alloc_body_end:
 
@@ -65,13 +63,9 @@ ft_strdup:
 	mov	rsi, reg_source_ptr
 	mov	rdi, reg_duplicate_ptr
 	call	ft_strcpy wrt ..plt
-	mov	reg_duplicate_ptr, rax
 .malloc_ok_end:
 
 .done:
-	mov	rax, reg_duplicate_ptr
-	pop	rbx
 	pop	r12
-	pop	rbp
 	ret
 .end:
