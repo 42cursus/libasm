@@ -29,3 +29,15 @@ end
 document strcpy_state
 Show ft_strcpy's semantic register state at the current instruction.
 end
+
+define strcmp_state
+	printf "reg_first_ptr           (rdi): %p\n", $rdi
+	x/s $rdi
+	printf "reg_second_ptr          (rsi): %p\n", $rsi
+	x/s $rsi
+	printf "reg_first_byte           (al): 0x%02x\n", $al
+	printf "reg_second_byte          (dl): 0x%02x\n", $dl
+end
+document strcmp_state
+Show ft_strcmp's semantic register state at the current instruction.
+end
