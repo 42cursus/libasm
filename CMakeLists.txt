@@ -15,6 +15,7 @@ cmake_minimum_required(VERSION 3.12)
 #set(CMAKE_C_COMPILER clang)
 set(CMAKE_C_COMPILER gcc-12)
 
+set(CMAKE_ASM_NASM_OBJECT_FORMAT elf64)
 enable_language(ASM_NASM)
 
 set(CMAKE_ASM_NASM_SOURCE_FILE_EXTENSIONS "asm;nasm;s")
@@ -90,12 +91,11 @@ add_library(${TARGET_LIB_NAME} STATIC ${TARGET_LIB_HEADERS} ${TARGET_LIB_SOURCES
 
 target_include_directories(${TARGET_LIB_NAME} PRIVATE include)
 target_compile_options(${TARGET_LIB_NAME}
-        PUBLIC
-        ${FT_CFLAGS}
         PRIVATE
         $<$<COMPILE_LANGUAGE:ASM_NASM>:
         ${TARGET_ASM_FLAGS}>
         $<$<COMPILE_LANGUAGE:C>:
+        ${FT_CFLAGS}
         ${TARGET_CFLAGS}>)
 
 file(GLOB_RECURSE TEST_TARGET_HEADERS "${PROJECT_SOURCE_DIR}/tests/*.h")
@@ -103,6 +103,9 @@ file(GLOB TEST_TARGET_SOURCES
     "${PROJECT_SOURCE_DIR}/tests/*.c"
     "${PROJECT_SOURCE_DIR}/tests/suites/*.c"
     "${PROJECT_SOURCE_DIR}/tests/study/*.c")
+file(GLOB BONUS_TEST_TARGET_SOURCES
+    "${PROJECT_SOURCE_DIR}/tests/bonus/*.c"
+    "${PROJECT_SOURCE_DIR}/tests/bonus/suites/*.c")
 
 set(TEST_TARGET_NAME "${PROJECT_NAME}_test")
 
@@ -122,12 +125,11 @@ target_include_directories(${TEST_TARGET_NAME} PRIVATE
 )
 
 target_compile_options(${TEST_TARGET_NAME}
-        PUBLIC
-        ${FT_CFLAGS}
         PRIVATE
         $<$<COMPILE_LANGUAGE:ASM_NASM>:
         ${TEST_TARGET_ASM_FLAGS}>
         $<$<COMPILE_LANGUAGE:C>:
+        ${FT_CFLAGS}
         ${TEST_TARGET_CFLAGS}>
 )
 
@@ -136,6 +138,26 @@ target_link_libraries(${TEST_TARGET_NAME} bsd ${TARGET_LIB_NAME})
 set_target_properties(${TEST_TARGET_NAME} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}"
         OUTPUT_NAME "${TEST_TARGET_NAME}")
+
+set(BONUS_TEST_TARGET_NAME "${PROJECT_NAME}_bonus_test")
+add_executable(${BONUS_TEST_TARGET_NAME}
+        ${BONUS_TEST_TARGET_SOURCES})
+target_include_directories(${BONUS_TEST_TARGET_NAME} PRIVATE
+        /usr/include
+        /usr/include/x86_64-linux-gnu
+        ${PROJECT_SOURCE_DIR}/src
+        ${PROJECT_SOURCE_DIR}/tests
+        ${PROJECT_SOURCE_DIR}/tests/bonus
+        ${PROJECT_SOURCE_DIR}/tests/bonus/suites)
+target_compile_options(${BONUS_TEST_TARGET_NAME}
+        PRIVATE
+        $<$<COMPILE_LANGUAGE:C>:
+        ${FT_CFLAGS}
+        ${TEST_TARGET_CFLAGS}>)
+target_link_libraries(${BONUS_TEST_TARGET_NAME} bsd ${TARGET_LIB_NAME})
+set_target_properties(${BONUS_TEST_TARGET_NAME} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}"
+        OUTPUT_NAME "${BONUS_TEST_TARGET_NAME}")
 
 #==============================================================================#
 # Custom targets
