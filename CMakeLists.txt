@@ -13,10 +13,10 @@
 cmake_minimum_required(VERSION 3.12)
 
 #set(CMAKE_C_COMPILER clang)
-set(CMAKE_C_COMPILER gcc-12)
+#set(CMAKE_C_COMPILER gcc-12)
+set(CMAKE_C_COMPILER gcc-9)
 
 set(CMAKE_ASM_NASM_OBJECT_FORMAT elf64)
-enable_language(ASM_NASM)
 
 set(CMAKE_ASM_NASM_SOURCE_FILE_EXTENSIONS "asm;nasm;s")
 
@@ -27,6 +27,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project("libasm" VERSION 0.1.0 LANGUAGES C ASM ASM_NASM)
+enable_language(ASM_NASM)
 
 set(FT_CFLAGS -Wall -Wextra -Werror)
 
@@ -46,6 +47,9 @@ set(PROJECT_CFLAGS
 
 IF(CMAKE_C_COMPILER_ID STREQUAL "GNU")
     LIST(APPEND PROJECT_CFLAGS
+            -fno-tree-ch
+            -fno-align-loops
+            -fno-tree-loop-optimize
             -fno-thread-jumps
             -fno-reorder-blocks
             -fno-tree-loop-distribute-patterns
@@ -105,6 +109,7 @@ file(GLOB TEST_TARGET_SOURCES
     "${PROJECT_SOURCE_DIR}/tests/study/*.c")
 file(GLOB BONUS_TEST_TARGET_SOURCES
     "${PROJECT_SOURCE_DIR}/tests/bonus/*.c"
+    "${PROJECT_SOURCE_DIR}/tests/bonus/study/*.c"
     "${PROJECT_SOURCE_DIR}/tests/bonus/suites/*.c")
 
 set(TEST_TARGET_NAME "${PROJECT_NAME}_test")
@@ -145,6 +150,7 @@ add_executable(${BONUS_TEST_TARGET_NAME}
 target_include_directories(${BONUS_TEST_TARGET_NAME} PRIVATE
         /usr/include
         /usr/include/x86_64-linux-gnu
+        ${PROJECT_SOURCE_DIR}/include
         ${PROJECT_SOURCE_DIR}/src
         ${PROJECT_SOURCE_DIR}/tests
         ${PROJECT_SOURCE_DIR}/tests/bonus
