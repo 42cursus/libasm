@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include <assert.h>
-#include <stdlib.h>
+#include <malloc.h>
 
 #include "suites.h"
 
