@@ -13,11 +13,7 @@
 bits 64
 default rel
 
-section .text.pad exec nowrite align=1
-    nop
-
-
-SECTION .text			  ; Section containing code
+SECTION .text exec nowrite align=16 ; Section containing code
 
 extern	ft_strlen
 extern	ft_strcpy
@@ -25,10 +21,9 @@ extern	malloc
 extern	__errno_location
 
 global   ft_strdup:function (ft_strdup.end - ft_strdup)
-global   ft_strdup.check_alloc:function (ft_strdup.check_alloc_end - ft_strdup.check_alloc)
-global   ft_strdup.check_alloc_body:function (ft_strdup.check_alloc_body_end - ft_strdup.check_alloc_body)
-global   ft_strdup.malloc_ok:function (ft_strdup.malloc_ok_end - ft_strdup.malloc_ok)
-global   ft_strdup.done:function (ft_strdup.end - ft_strdup.done)
+global   ft_strdup.check_alloc:object hidden (ft_strdup.check_alloc_body - ft_strdup.check_alloc)
+global   ft_strdup.check_alloc_body:object hidden (ft_strdup.done - ft_strdup.check_alloc_body)
+global   ft_strdup.done:object hidden (ft_strdup.end - ft_strdup.done)
 
 ERRNO_ENOMEM	equ 12
 NULL			equ 0
@@ -40,32 +35,27 @@ NULL			equ 0
 
 ft_strdup:
 	push	r12
-	mov	reg_source_ptr, rdi
-
+	mov     reg_source_ptr, rdi
 	call	ft_strlen wrt ..plt
-	lea	rdi, 1[rax]
-
+	lea     rdi, 1[rax]
 	call	malloc wrt ..plt
 
 .check_alloc:
 	test	reg_duplicate_ptr, reg_duplicate_ptr
-	jne	.malloc_ok
-.check_alloc_end:
-
-.check_alloc_body:
-	call	__errno_location wrt ..plt
-	mov	DWORD [reg_errno_ptr], ERRNO_ENOMEM
-	mov	reg_duplicate_ptr, NULL
-	jmp	.done
-.check_alloc_body_end:
-
-.malloc_ok:
+	je	.check_alloc_body
 	mov	rsi, reg_source_ptr
 	mov	rdi, reg_duplicate_ptr
 	call	ft_strcpy wrt ..plt
-.malloc_ok_end:
+	jmp	.done
+
+.check_alloc_body:
+	call	__errno_location wrt ..plt
+	mov	dword [reg_errno_ptr], ERRNO_ENOMEM
+	mov	reg_duplicate_ptr, NULL
 
 .done:
 	pop	r12
 	ret
+
 .end:
+    nop

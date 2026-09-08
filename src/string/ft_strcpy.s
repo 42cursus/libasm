@@ -16,14 +16,11 @@ default rel
 SECTION .rodata			  ; Section containing initialized read-only data
 SECTION .bss              ; Section containing uninitialized data
 
-section .text.pad exec nowrite align=1
-    nop
-
 global   ft_strcpy:function (ft_strcpy.end - ft_strcpy)
-global   ft_strcpy.copy_loop:function (ft_strcpy.copy_loop_end - ft_strcpy.copy_loop)
-global   ft_strcpy.done:function (ft_strcpy.end - ft_strcpy.done)
+global   ft_strcpy.copy_loop:object hidden (ft_strcpy.done - ft_strcpy.copy_loop)
+global   ft_strcpy.done:object hidden (ft_strcpy.end - ft_strcpy.done)
 
-SECTION .text			  ; Section containing code
+SECTION .text exec nowrite align=16 ; Section containing code
 
 ; ft_strcpy register roles
 %define reg_return_ptr		rax
@@ -42,8 +39,9 @@ ft_strcpy:
 	inc	reg_source_cursor
 	inc	reg_dest_cursor
 	jmp	.copy_loop
-.copy_loop_end:
 
 .done:
 	ret
+
 .end:
+    nop

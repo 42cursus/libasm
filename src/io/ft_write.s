@@ -54,3 +54,4 @@ ft_write:
 	pop	rbp
 	ret                       		; all done!
 .end:
+    nop

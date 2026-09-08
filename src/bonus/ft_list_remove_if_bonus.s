@@ -15,15 +15,14 @@ default rel
 
 SECTION .rodata
 SECTION .bss
-section .text.pad exec nowrite align=1
-	nop
+SECTION .text exec nowrite align=16 ; Section containing code
 
 extern	free
 
 global	ft_list_remove_if:function (ft_list_remove_if.end - ft_list_remove_if)
-global	ft_list_remove_if.loop:function (ft_list_remove_if.loop_end - ft_list_remove_if.loop)
-global	ft_list_remove_if.remove:function (ft_list_remove_if.remove_end - ft_list_remove_if.remove)
-global	ft_list_remove_if.done:function (ft_list_remove_if.end - ft_list_remove_if.done)
+global	ft_list_remove_if.loop:object hidden (ft_list_remove_if.remove - ft_list_remove_if.loop)
+global	ft_list_remove_if.remove:object hidden (ft_list_remove_if.restore - ft_list_remove_if.remove)
+global	ft_list_remove_if.done:object hidden (ft_list_remove_if.end - ft_list_remove_if.done)
 
 LIST_DATA_OFFSET	equ 0
 LIST_NEXT_OFFSET	equ 8
@@ -34,8 +33,6 @@ LIST_NEXT_OFFSET	equ 8
 %define reg_cmp_fn		r14
 %define reg_free_fn		r15
 %define reg_node_ptr		rbx
-
-SECTION .text
 
 ; void ft_list_remove_if(t_list **begin_list, void *data_ref,
 ;                         int (*cmp)(), void (*free_fct)(void *));
@@ -67,7 +64,6 @@ ft_list_remove_if:
 	je	.remove
 	lea	reg_link_ptr, [reg_node_ptr + LIST_NEXT_OFFSET]
 	jmp	.loop
-.loop_end:
 
 .remove:
 	mov	rdi, [reg_node_ptr + LIST_DATA_OFFSET]
@@ -77,7 +73,6 @@ ft_list_remove_if:
 	mov	rdi, reg_node_ptr
 	call	free wrt ..plt
 	jmp	.loop
-.remove_end:
 
 .restore:
 	pop	r15
@@ -85,6 +80,9 @@ ft_list_remove_if:
 	pop	r13
 	pop	r12
 	pop	rbx
+
 .done:
 	ret
+
 .end:
+    nop

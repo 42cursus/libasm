@@ -55,3 +55,4 @@ ft_read:
 	pop	rbp
 	ret            		; all done!
 .end:
+    nop

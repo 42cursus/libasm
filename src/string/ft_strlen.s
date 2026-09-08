@@ -13,18 +13,14 @@
 bits 64
 default rel
 
-section .text.pad exec nowrite align=1
-    nop
-
-SECTION .text			  ; Section containing code
+SECTION .text exec nowrite align=16 ; Section containing code
 
 global   ft_strlen_rep_byte:function (ft_strlen_rep_byte.end - ft_strlen_rep_byte)
+global   ft_strlen.align:object hidden (ft_strlen.dword_loop - ft_strlen.align)
+global   ft_strlen.dword_loop:object hidden (ft_strlen.locate_first_nul - ft_strlen.dword_loop)
+global   ft_strlen.locate_first_nul:object hidden (ft_strlen.done - ft_strlen.locate_first_nul)
+global   ft_strlen.done:object hidden (ft_strlen.end - ft_strlen.done)
 global   ft_strlen:function (ft_strlen.end - ft_strlen)
-
-global   ft_strlen.align:function (ft_strlen.align_end - ft_strlen.align)
-global   ft_strlen.dword_loop:function (ft_strlen.dword_loop_end - ft_strlen.dword_loop)
-global   ft_strlen.locate_first_nul:function (ft_strlen.locate_first_nul_end - ft_strlen.locate_first_nul)
-global   ft_strlen.done:function (ft_strlen.end - ft_strlen.done)
 
 DWORD_SIZE				equ 4
 DWORD_ALIGNMENT_MASK	equ DWORD_SIZE - 1
@@ -62,7 +58,6 @@ ft_strlen:
 	je	.done
 	inc	reg_cursor
 	jmp	.align
-.align_end:
 
 .dword_loop:
 	mov	reg_zero_mask_dword, dword [reg_cursor]
@@ -71,7 +66,6 @@ ft_strlen:
 	jnz	.locate_first_nul
 	add	reg_cursor, DWORD_SIZE
 	jmp	.dword_loop
-.dword_loop_end:
 
 .locate_first_nul:
 	; The dword mask is zero-extended into rdx by DETECT_NULL_DWORD.
@@ -81,12 +75,12 @@ ft_strlen:
 	mov	reg_byte_offset, reg_marker_bit_idx
 	shr	reg_byte_offset, 3
 	add	reg_cursor, reg_byte_offset
-.locate_first_nul_end:
 
 .done:
 	sub	reg_cursor, reg_start_ptr
 	ret
 .end:
+    nop
 
 ; size_t ft_strlen_rep_byte(const char *src);
 ft_strlen_rep_byte:
@@ -109,3 +103,4 @@ repne scasb					; while [rdi] != al, keep scanning
 	pop   rbx
 	ret                       ; all done!
 .end:
+    nop

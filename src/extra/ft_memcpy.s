@@ -17,49 +17,46 @@ default rel
 
 SECTION .rodata
 SECTION .bss
-
-section .text.pad exec nowrite align=1
-    nop
+SECTION .text exec nowrite align=16 ; Section containing code
 
 global  ft_memcpy:function (ft_memcpy.end - ft_memcpy)
-
-SECTION .text
 
 ; void	*ft_memcpy(void *dest, const void *src, size_t n)
 ft_memcpy:
 	push	rbp
-	mov	rbp, rsp
-	sub	rsp, 16
-	mov	save_pointer, rdi
+	mov     rbp, rsp
+	sub     rsp, 16
+	mov     save_pointer, rdi
 
 	test	rsi, rsi
 	sete	al
 	test	rdi, rdi
 	sete	cl
-	or	al, cl
-	je	.loop_start
-	mov	save_pointer, 0
-	jmp	.loop_end
+	or      al, cl
+	je      .loop_start
+	mov     save_pointer, 0
+	jmp     .done
 
 .loop_start:
 	test	rdx, rdx
-	je	.loop_end
+	je      .done
 
 .loop_body:
-	mov	rcx, rsi
-	add	rsi, 1
-	mov	rax, rdi
-	add	rdi, 1
+	mov     rcx, rsi
+	add     rsi, 1
+	mov     rax, rdi
+	add     rdi, 1
 	movzx	ecx, byte [rcx]
-	mov	byte [rax], cl
+	mov     byte [rax], cl
 
 .loop_iter:
-	sub	rdx, 1
-	jne	.loop_body
+	sub     rdx, 1
+	jne     .loop_body
 
-.loop_end:
-	mov	rax, save_pointer
+.done:
+	mov     rax, save_pointer
 	leave
 	ret
 
 .end:
+    nop
