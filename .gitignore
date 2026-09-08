@@ -12,6 +12,7 @@
 
 libasm.*
 libasm_test
+libasm_bonus_test
 libasm.a
 
 gdb.txt
