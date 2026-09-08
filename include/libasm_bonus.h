@@ -22,6 +22,8 @@ typedef struct s_list
 	struct s_list	*next;
 }	t_list;
 
+int		ft_isspace(int c);
+char	*ft_strchr(const char *s, int chr);
 int		ft_atoi_base(char *str, char *base);
 void	ft_list_push_front(t_list **begin_list, void *data);
 u_int	ft_list_size(t_list *begin_list);

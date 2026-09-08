@@ -16,6 +16,7 @@ FILES	= main.c \
 		  suites/test_list_size.c \
 		  suites/test_list_sort.c \
 		  suites/test_list_remove_if.c \
-		  suites/list_test_utils.c
+		  suites/list_test_utils.c \
+		  study/ft_list_sort.c
 
 BONUS_TEST_SRCS += $(FILES:%.c=$(dir $(lastword $(MAKEFILE_LIST)))%.c)

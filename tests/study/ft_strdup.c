@@ -15,7 +15,7 @@
 #include <errno.h>
 #include "libasm.h"
 
-char	*ft_strdup(const char *const src)
+char	*ft_strdup_c(const char *const src)
 {
 	char	*new;
 
@@ -28,12 +28,12 @@ char	*ft_strdup(const char *const src)
 		ASM_L(.check_alloc_body);
 		errno = ENOMEM;
 		new = NULL;
-		goto done;
+		goto ft_strdup_c_done;
 	}
 	ASM_L(.malloc_ok);
 	*new = '\0';
 	new = ft_strcpy(new, src);
-ASM_L(.done);
-done:
+ASM_L(.ft_strdup_c_done);
+ft_strdup_c_done:
 	return (new);
 }
